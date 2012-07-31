@@ -1,0 +1,11 @@
+[{
+    "dir" : "static",
+    "css" : {
+        "in" : [],
+        "out" : "css/style.min.css"
+    },
+    "js" : {
+        "in" : [],
+        "out" : "js/script.min.js"
+    }
+}]

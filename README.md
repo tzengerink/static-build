@@ -17,6 +17,4 @@ as your template:
         }
     }]
 
-Copyright (c) 2012, T. Zengerink
-Licensed under MIT Lisence
-See: https://raw.github.com/Mytho/static-build/master/LICENSE
+*Copyright (c) 2012, T. Zengerink - [See the lisence](https://raw.github.com/Mytho/static-build/master/LICENSE)*

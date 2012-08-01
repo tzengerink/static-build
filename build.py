@@ -27,12 +27,36 @@
 import json, subprocess
 
 
-def clear_contents(filepath):
-    """Clear the contents of a file.
-    filepath -- Path to the file.
+class File:
+    """Assists in handling files.
+    path -- Path of the file.
     """
-    handle = open(filepath, 'w')
-    handle.close()
+    def __init__(self, path):
+        self.path = path
+
+    def clear(self):
+        """Clear the contents of the file."""
+        open(self.path, 'w').close()
+
+    def read(self):
+        """Read the contents of the file."""
+        contents = ""
+        handle = open(self.path)
+        while 1:
+            line = handle.readline()
+            if not line:
+                break
+            contents += line
+        handle.close()
+        return contents
+
+    def write(self, txt):
+        """Append text to the end of the file.
+        txt -- Text to append to the file.
+        """
+        handle = open(filepath, 'a')
+        handle.write(contents)
+        handle.close()
 
 
 def concatenate(paths, filepath, root=False):
@@ -41,25 +65,10 @@ def concatenate(paths, filepath, root=False):
     filepath -- Filepath of the resulting file.
     root     -- Root directory.
     """
-    clear_contents(filepath)
+    File(filepath).clear()
     for file in paths:
         path = root+'/'+file if root else file
-        put_contents(get_contents(path), filepath)
-
-
-def get_contents(filepath):
-    """Get the contents of a file as a string.
-    filepath -- Path to the file to get
-    """
-    contents = ""
-    handle = open(filepath)
-    while 1:
-        line = handle.readline()
-        if not line:
-            break
-        contents += line
-    handle.close()
-    return contents
+        File(filepath).write(File(path).read())
 
 
 def minify(path_in, path_out, type):
@@ -68,22 +77,12 @@ def minify(path_in, path_out, type):
     path_out -- Path to output file.
     type     -- Type of the file to minify (css/js)
     """
-    subprocess.call(['java', '-jar', 'tools/yuicompressor-2.4.7.jar', '-o',
+    subprocess.call(['java', '-jar', 'yuicompressor-2.4.7.jar', '-o',
         path_out, '--type', type, path_in])
 
 
-def put_contents(contents, filepath):
-    """Append file with given text.
-    txt      -- Text to append to file.
-    filepath -- Path of the file.
-    """
-    handle = open(filepath, 'a')
-    handle.write(contents)
-    handle.close()
-
-
 def main():
-    for build in json.loads(get_contents("builds.json")):
+    for build in json.loads(File('builds.json').read()):
         tmp = '/var/tmp/concat'
         for type in ['css', 'js']:
             concatenate(build[type]['in'], tmp, build['dir'])

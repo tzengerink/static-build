@@ -55,7 +55,7 @@ class File:
         txt -- Text to append to the file.
         """
         handle = open(self.path, 'a')
-        handle.write(contents)
+        handle.write(txt)
         handle.close()
 
 

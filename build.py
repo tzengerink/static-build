@@ -24,7 +24,7 @@
     Licensed under MIT Lisence
     See: https://raw.github.com/Mytho/static-build/master/LISENCE
 """
-import json, subprocess
+import json, subprocess, os
 
 
 class File:
@@ -59,34 +59,42 @@ class File:
         handle.close()
 
 
-def concatenate(paths, filepath, root=False):
-    """Concatinate all files in list.
-    paths    -- List of filepaths to concatinate.
-    filepath -- Filepath of the resulting file.
-    root     -- Root directory.
+class Builder:
+    """Assists in building static files.
+    root -- Projects root directory.
     """
-    File(filepath).clear()
-    for file in paths:
-        path = root+'/'+file if root else file
-        File(filepath).write(File(path).read())
+    def __init__(self, root):
+        self.root = root
 
+    def concat(self, paths, file_out):
+        """Concatinate all files in list.
+        paths    -- List of filepaths to concatinate.
+        file_out -- Path to output file
+        """
+        File(file_out).clear()
+        for file in paths:
+            path = self.root+'/'+file
+            File(file_out).write(File(self.root+'/'+file).read())
 
-def minify(path_in, path_out, type):
-    """Minify all files in the given list.
-    path_in  -- Path to input file.
-    path_out -- Path to output file.
-    type     -- Type of the file to minify (css/js)
-    """
-    subprocess.call(['java', '-jar', 'yuicompressor-2.4.7.jar', '-o',
-        path_out, '--type', type, path_in])
+    def minify(self, file_in, file_out, file_type):
+        """Minify file.
+        file_in  -- Path to input file.
+        file_out -- Path to output file.
+        type     -- Type of the file to minify (css/js)
+        """
+        subprocess.call(['java', '-jar',
+            self.root+'/build/yuicompressor-2.4.7.jar', '-o', file_out,
+            '--type', file_type, file_in])
 
 
 def main():
-    for build in json.loads(File('builds.json').read()):
-        tmp = '/var/tmp/concat'
+    root = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    builder = Builder(root)
+    tmp = '/var/tmp/concat'
+    for build in json.loads(File(root+'/build/builds.json').read()):
         for type in ['css', 'js']:
-            concatenate(build[type]['in'], tmp, build['dir'])
-            minify(tmp, build['dir']+'/'+build[type]['out'], type)
+            builder.concat(build[type]['in'], tmp)
+            builder.minify(tmp, build[type]['out'], type)
 
 
 if __name__ == '__main__':

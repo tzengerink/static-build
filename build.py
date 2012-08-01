@@ -54,7 +54,7 @@ class File:
         """Append text to the end of the file.
         txt -- Text to append to the file.
         """
-        handle = open(filepath, 'a')
+        handle = open(self.path, 'a')
         handle.write(contents)
         handle.close()
 

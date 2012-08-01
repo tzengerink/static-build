@@ -5,11 +5,13 @@
     ------------
     Easily concatinate and minify your JavaScript files and CSS stylesheets.
 
-    Simply edit `builds.json` to meet your needs. You should use the following
-    as your template:
+    First clone this repository as a submodule of your project. It is assumed
+    this submodule is named `build`.
+
+    Inside the submodule copy and rename `builds.json.default` and edit the file
+    to meet your needs. You should use the following as your template:
 
         [{
-            "dir" : "static",
             "css" : {
                 "in" : [],
                 "out" : "css/style.min.css"
@@ -77,7 +79,7 @@ class Builder:
             File(file_out).write(File(self.root+'/'+file).read())
 
     def minify(self, file_in, file_out, file_type):
-        """Minify file.
+        """Minify file using the YUI Compressor.
         file_in  -- Path to input file.
         file_out -- Path to output file.
         type     -- Type of the file to minify (css/js)

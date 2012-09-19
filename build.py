@@ -6,7 +6,7 @@
     Easily concatinate and minify your JavaScript files and CSS stylesheets.
 
     First clone this repository as a submodule of your project. It is assumed
-    this submodule is named `build`.
+    this submodule is placed in your projects root directory.
 
     Inside the submodule copy and rename `builds.json.default` and edit the file
     to meet your needs. You should use the following as your template:
@@ -26,7 +26,57 @@
     Licensed under MIT Lisence
     See: https://raw.github.com/Mytho/static-build/master/LISENCE
 """
-import json, subprocess, os
+import argparse, json, subprocess, os
+
+
+class Builder:
+    """Assists in building static files.
+    root_dir  -- Projects root directory.
+    build_dir -- Path of build directory.
+    tmp       -- Temporary file (Default='/var/tmp/static-build')
+    """
+    def __init__(self, root_dir, build_dir, tmp='/var/tmp/static-build'):
+        self.root_dir = root_dir
+        self.build_dir = build_dir
+        self.tmp = tmp
+        self.json = build_dir+'/builds.json'
+
+    def build(self):
+        """Build the files according to the JSON file."""
+        for build in json.loads(File(self.json).read()):
+            for type in ['css', 'js']:
+                Log.write("Concatinating "+type+":")
+                self.concat(build[type]['in'])
+                Log.write("Minifying "+type+":")
+                self.minify(build[type]['out'], type)
+        Log.write("Done")
+
+    def concat(self, paths, file_out=None):
+        """Concatinate all files in list.
+        paths    -- List of filepaths to concatinate.
+        file_out -- Path to output file (Default=None).
+        """
+        if file_out == None:
+            file_out = self.tmp
+        File(file_out).clear()
+        for file in paths:
+            Log.write(" "+file)
+            path = self.root_dir+'/'+file
+            File(file_out).write(File(self.root_dir+'/'+file).read())
+
+    def minify(self, file_out, file_type, file_in=None):
+        """Minify file using the YUI Compressor.
+        file_out -- Path to output file.
+        type     -- Type of the file to minify (css/js).
+        file_in  -- Path to input file (Default=None).
+        """
+        if file_in == None:
+            file_in = self.tmp
+        Log.write(" "+file_out)
+        subprocess.call(['java', '-jar',
+                         self.build_dir+'/yuicompressor-2.4.7.jar',
+                         '-o', self.root_dir+'/'+file_out, '--type',
+                         file_type, file_in])
 
 
 class File:
@@ -61,42 +111,29 @@ class File:
         handle.close()
 
 
-class Builder:
-    """Assists in building static files.
-    root -- Projects root directory.
-    """
-    def __init__(self, root):
-        self.root = root
+class Log:
+    """Assists in logging output to the screen."""
+    enabled = False
+    @staticmethod
+    def write(str):
+        """Write string to the screen."""
+        if Log.enabled:
+            print(str)
 
-    def concat(self, paths, file_out):
-        """Concatinate all files in list.
-        paths    -- List of filepaths to concatinate.
-        file_out -- Path to output file
-        """
-        File(file_out).clear()
-        for file in paths:
-            path = self.root+'/'+file
-            File(file_out).write(File(self.root+'/'+file).read())
 
-    def minify(self, file_in, file_out, file_type):
-        """Minify file using the YUI Compressor.
-        file_in  -- Path to input file.
-        file_out -- Path to output file.
-        type     -- Type of the file to minify (css/js)
-        """
-        subprocess.call(['java', '-jar',
-            self.root+'/build/yuicompressor-2.4.7.jar', '-o', file_out,
-            '--type', file_type, file_in])
+def handle_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-v', '--verbose',
+                        action='store_true',
+                        help='be verbose')
+    args = parser.parse_args()
+    Log.enabled = args.verbose
 
 
 def main():
-    root = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-    builder = Builder(root)
-    tmp = '/var/tmp/concat'
-    for build in json.loads(File(root+'/build/builds.json').read()):
-        for type in ['css', 'js']:
-            builder.concat(build[type]['in'], tmp)
-            builder.minify(tmp, build[type]['out'], type)
+    handle_args()
+    Builder(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
+        os.path.dirname(os.path.realpath(__file__))).build()
 
 
 if __name__ == '__main__':

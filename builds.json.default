@@ -1,10 +1,10 @@
 [{
-    "css" : {
-        "in" : [],
-        "out" : "css/style.min.css"
-    },
-    "js" : {
-        "in" : [],
-        "out" : "js/script.min.js"
-    }
+	"css" : {
+		"in" : [],
+		"out" : "css/style.min.css"
+	},
+	"js" : {
+		"in" : [],
+		"out" : "js/script.min.js"
+	}
 }]

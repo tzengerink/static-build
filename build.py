@@ -33,7 +33,7 @@ class Builder:
     """Assists in building static files.
     root_dir  -- Projects root directory.
     build_dir -- Path of build directory.
-    tmp       -- Temporary file (Default='/var/tmp/static-build')
+    tmp       -- Temporary file (Default='/var/tmp/static-build').
     """
     def __init__(self, root_dir, build_dir, tmp='/var/tmp/static-build'):
         self.root_dir = root_dir

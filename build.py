@@ -45,10 +45,11 @@ class Builder:
         """Build the files according to the JSON file."""
         for build in json.loads(File(self.json).read()):
             for type in ['css', 'js']:
-                Log.write("Concatinating "+type+":")
-                self.concat(build[type]['in'])
-                Log.write("Minifying "+type+":")
-                self.minify(build[type]['out'], type)
+                if type in build:
+                    Log.write("Concatinating "+type+":")
+                    self.concat(build[type]['in'])
+                    Log.write("Minifying "+type+":")
+                    self.minify(build[type]['out'], type)
         Log.write("Done")
 
     def concat(self, paths, file_out=None):

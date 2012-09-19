@@ -2,8 +2,8 @@ STATIC-BUILD
 ------------
 Easily concatinate and minify your JavaScript files and CSS stylesheets.
 
-First clone this repository as a submodule of your project. It is assumed this
-submodule is named `build`.
+First clone this repository as a submodule of your project. It is assumed
+this submodule is placed in your projects root directory.
 
 Inside the submodule copy and rename `builds.json.default` and edit the file to
 meet your needs. You should use the following as your template:

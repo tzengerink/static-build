@@ -46,9 +46,7 @@ class Builder:
         for build in json.loads(File(self.json).read()):
             for type in ['css', 'js']:
                 if type in build:
-                    Log.write("Concatinating "+type+":")
                     self.concat(build[type]['in'])
-                    Log.write("Minifying "+type+":")
                     self.minify(build[type]['out'], type)
         Log.write("Done")
 
@@ -61,7 +59,7 @@ class Builder:
             file_out = self.tmp
         File(file_out).clear()
         for file in paths:
-            Log.write(" "+file)
+            Log.write("Concatinating "+file)
             path = self.root_dir+'/'+file
             File(file_out).write(File(self.root_dir+'/'+file).read())
 
@@ -73,7 +71,7 @@ class Builder:
         """
         if file_in == None:
             file_in = self.tmp
-        Log.write(" "+file_out)
+        Log.write("Minifying "+file_out)
         subprocess.call(['java', '-jar',
                          self.build_dir+'/yuicompressor-2.4.7.jar',
                          '-o', self.root_dir+'/'+file_out, '--type',

@@ -12,6 +12,7 @@
     to meet your needs. You should use the following as your template:
 
         [{
+            "name" : "My Repo Name",
             "css" : {
                 "in" : [],
                 "out" : "css/style.min.css"
@@ -44,11 +45,12 @@ class Builder:
     def build(self):
         """Build the files according to the JSON file."""
         for build in json.loads(File(self.json).read()):
+            Log.write("Building " + build['name'])
             for type in ['css', 'js']:
                 if type in build:
                     self.concat(build[type]['in'])
                     self.minify(build[type]['out'], type)
-        Log.write("Done")
+        Log.write("DONE!")
 
     def concat(self, paths, file_out=None):
         """Concatinate all files in list.
@@ -59,7 +61,7 @@ class Builder:
             file_out = self.tmp
         File(file_out).clear()
         for file in paths:
-            Log.write("Concatinating "+file)
+            Log.write(" Concatinating "+file)
             path = self.root_dir+'/'+file
             File(file_out).write(File(self.root_dir+'/'+file).read())
 
@@ -71,7 +73,7 @@ class Builder:
         """
         if file_in == None:
             file_in = self.tmp
-        Log.write("Minifying "+file_out)
+        Log.write(" Minifying "+file_out)
         subprocess.call(['java', '-jar',
                          self.build_dir+'/yuicompressor-2.4.7.jar',
                          '-o', self.root_dir+'/'+file_out, '--type',

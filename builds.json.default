@@ -1,4 +1,5 @@
 [{
+	"name" : "My Repo Name",
 	"css" : {
 		"in" : [],
 		"out" : "css/style.min.css"

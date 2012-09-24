@@ -9,6 +9,7 @@ Inside the submodule copy and rename `builds.json.default` and edit the file to
 meet your needs. You should use the following as your template:
 
     [{
+        "name" : "My Repo Name",
         "css" : {
             "in" : [],
             "out" : "css/style.min.css"
